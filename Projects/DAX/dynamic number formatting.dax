@@ -1,0 +1,18 @@
+FormattedMeasure = 
+VAR SelectedValue = SELECTEDMEASURE()
+VAR MeasureName = SELECTEDMEASURENAME()
+RETURN
+    SWITCH(
+        TRUE(),
+        -- Check for percentage measures (assuming measure name contains "Percent" or similar)
+        CONTAINSSTRING(MeasureName, "Percent") || CONTAINSSTRING(MeasureName, "%"),
+            FORMAT(SelectedValue, "0.00%"),
+        -- Check for measures in millions (assuming measure name contains "Million" or large values)
+        CONTAINSSTRING(MeasureName, "Million") || ABS(SelectedValue) >= 1000000,
+            FORMAT(SelectedValue / 1000000, "#,##0.00") & "M",
+        -- Check for measures in thousands (assuming measure name contains "Thousand" or mid-range values)
+        CONTAINSSTRING(MeasureName, "Thousand") || ABS(SelectedValue) >= 1000,
+            FORMAT(SelectedValue / 1000, "#,##0.00") & "K",
+        -- Default to standard number format
+        FORMAT(SelectedValue, "#,##0.00")
+    )
